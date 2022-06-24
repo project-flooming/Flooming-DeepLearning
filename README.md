@@ -3,7 +3,9 @@
   - paper : https://arxiv.org/abs/1611.07004
   - framework : pytorch
   
-### example 1  
+### goal: 꽃 사진을 입력으로 받으면 그림체로 변환해서 출력
+  
+### example 1 in paper  
 <img src = "https://github.com/project-flooming/Floming-deeplearning/blob/main/figure/figure1.JPG?raw=true">
 
 ### example 2
