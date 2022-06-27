@@ -3,7 +3,7 @@
   - paper : https://arxiv.org/abs/1611.07004
   - framework : pytorch
   
-### first goal: 꽃 사진을 입력으로 받으면 어떤 종류인지 
+### first goal: 꽃 사진을 입력으로 받으면 어떤 종류인지 분류
 ### second goal: 꽃 사진을 입력으로 받으면 그림체로 변환해서 출력
   
 ### example 1 in paper  
