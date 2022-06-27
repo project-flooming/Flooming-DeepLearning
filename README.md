@@ -21,4 +21,4 @@
 ### example 5
 <img src = "https://github.com/project-flooming/Floming-deeplearning/blob/main/figure/figure5.JPG?raw=true">
 
-source : paper
+source : Image-to-Image Translation with Conditional Adversarial Networks
