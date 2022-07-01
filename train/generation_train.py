@@ -7,7 +7,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 
-from model import Generator, Discriminator
+from model.generation_model import Generator, Discriminator
 
 device = torch.device('cuda')
 
@@ -16,13 +16,13 @@ discriminator = Discriminator().to(device)
 
 patch = (1, 32, 32)
 weight = 2
-lambda_pixel = 2
+l1_weight = 2
 lr = 0.0002
 beta1 = 0.5
 beta2 = 0.999
 
-loss_func_gan = nn.BCELoss().to(device)
-loss_func_pix = nn.L1Loss().to(device)
+bce_loss = nn.BCELoss().to(device)
+l1_loss = nn.L1Loss().to(device)
 
 gen_optim = optim.Adam(generator.parameters(), lr=lr, betas=(beta1,beta2))
 dis_optim = optim.Adam(discriminator.parameters(), lr=lr, betas=(beta1,beta2))
@@ -58,10 +58,10 @@ def train_discriminator(g_model, d_model,
     fake_B = g_model(real_A)
     
     real_out = d_model(real_A, real_B)
-    real_loss = torch.sum(loss_func_gan(real_out, real_label))
+    real_loss = torch.sum(bce_loss(real_out, real_label))
     
     fake_out = d_model(real_B, fake_B)
-    fake_loss = torch.sum(loss_func_gan(fake_out, fake_label))
+    fake_loss = torch.sum(bce_loss(fake_out, fake_label))
     
     d_loss = (real_loss + fake_loss) * weight
     d_loss.backward()
@@ -78,10 +78,10 @@ def train_generator(g_model, d_model,
     
     dis_out = d_model(fake_B, real_B)
     
-    gen_loss = loss_func_gan(dis_out, real_label)
-    pix_loss = loss_func_pix(fake_B, real_B)
+    gen_loss = bce_loss(dis_out, real_label)
+    pix_loss = l1_loss(fake_B, real_B)
     
-    g_loss = gen_loss + lambda_pixel * pix_loss
+    g_loss = gen_loss + l1_weight * pix_loss
     g_loss.backward()
     gen_optim.step()
 
@@ -91,8 +91,7 @@ def train_gan(g_model, d_model,
               dataset,
               n_epochs,
               show_image_epoch,
-              weight,
-              lambda_pixel):
+            ):
     g_model.train()
     d_model.train()
 
