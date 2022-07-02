@@ -23,6 +23,7 @@ class GenerationDataset(Dataset):
             f'The size of inputs and labels is different.'
 
         self.transforms_ = transforms.Compose([
+            transforms.RandomHorizontalFlip(p=0.5),
             transforms.Resize((img_size, img_size)),
             transforms.ToTensor(),
             transforms.Normalize((0.5,0.5,0.5), (0.5,0.5,0.5)),

@@ -67,7 +67,7 @@ def train_discriminator(g_model, d_model,
     d_loss.backward()
     dis_optim.step()
 
-    return d_loss
+    return d_loss, g_model, d_model
 
 def train_generator(g_model, d_model,
                     real_A, real_B,
@@ -85,12 +85,16 @@ def train_generator(g_model, d_model,
     g_loss.backward()
     gen_optim.step()
 
-    return g_loss, fake_B
+    return g_loss, fake_B, g_model, d_model
 
 def train_gan(g_model, d_model,
               dataset,
               n_epochs,
               show_image_epoch,
+              g_optimizer,
+              d_optimizer,
+              bce_loss,
+              l1_loss,
             ):
     g_model.train()
     d_model.train()
@@ -107,15 +111,15 @@ def train_gan(g_model, d_model,
             fake_label = torch.zeros(img_A.size()[0], *patch, requires_grad=False).to(device)
 
             """ train discriminator model """
-            d_loss = train_discriminator(g_model, d_model,
-                                         real_A, real_B,
-                                         real_label, fake_label)
+            d_loss, g_model, d_miodel = train_discriminator(g_model, d_model,
+                                                            real_A, real_B,
+                                                            real_label, fake_label)
             batch_d_loss += d_loss.item()
             
             """ train generator model """
-            g_loss, fake_B = train_generator(g_model, d_model,
-                                     real_A, real_B,
-                                     real_label, fake_label)
+            g_loss, fake_B, g_model, d_model = train_generator(g_model, d_model,
+                                                               real_A, real_B,
+                                                               real_label, fake_label)
             batch_g_loss += g_loss.item()
             
         g_loss_list.append(batch_g_loss/(batch+1))
@@ -130,6 +134,8 @@ def train_gan(g_model, d_model,
         plot_generated_images(real_A, real_B, fake_B, epoch+1, show_image_epoch)
         
     end_training = time.time()
+    torch.save(g_model.state_dict(), '/model/generator_weights.pt')
+    torch.save(d_model.state_dict(), '/model/discriminator_weights.pt')
     print(f'\nTotal time for training is {end_training-start_training:.3f}s')
     
     return {

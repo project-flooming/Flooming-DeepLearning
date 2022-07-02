@@ -11,13 +11,11 @@ class VGG19(nn.Module):
         pre_trained=True,
     ):
         super(VGG19, self).__init__()
-        self.pre_trained = models.vgg19_bn(pre_trained=pre_trained)
+        self.pre_trained = models.vgg19_bn(pretrained=pre_trained)
         self.features = self.pre_trained.features
         self.gap = nn.AdaptiveAvgPool2d(output_size=(1,1))
         self.classifier = nn.Sequential(
-            nn.Linear(512, 100),
-            nn.ReLU(inplace=True),
-            nn.Linear(100, num_classes),
+            nn.Linear(512, num_classes),
         )
 
     def forward(self, x):

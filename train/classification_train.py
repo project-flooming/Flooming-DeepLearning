@@ -7,7 +7,7 @@ import torch.nn as nn
 import torch.optim as optim
 
 from torchcallback import CheckPoint, EarlyStopping
-from classification_model import VGG19
+from model.classification_model import VGG19
 
 device = torch.device('cuda')
 

@@ -72,8 +72,10 @@ def main(args):
         dataset=data_loader,
         n_epochs=args.epoch,
         show_image_epoch=args.show_plot_epoch,
-        weight=weight,
-        l1_weight=l1_weight,
+        g_optimizer=gen_optim,
+        d_optimizer=dis_optim,
+        bce_loss=bce_loss,
+        l1_loss=l1_loss,
     )
 
 if __name__ == '__main__':
