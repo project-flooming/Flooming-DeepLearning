@@ -14,11 +14,11 @@ from train.classification_train import train_step
 
 def get_args_parser():
     parser = argparse.ArgumentParser(description='Set Pix2Pix training', add_help=False)
-    parser.add_argument('--path', defaults='/dataset/', type=str,
+    parser.add_argument('--path', default='C:/Users/user/MY_DL/flower/dataset/korean_flower/inputs', type=str,
                         help='Path of data')
     parser.add_argument('--img_size', default='256', type=int,
                         help='Input size of VGG19 model')
-    parser.add_argument('--device', default='cuda' if torch.cuda.is_availabel() else 'cpu', type=str,
+    parser.add_argument('--device', default='cuda', type=str,
                         help='Set device')
     parser.add_argument('--lr', default=0.0002, type=float,
                         help='learning rate')
@@ -28,7 +28,7 @@ def get_args_parser():
                         help='beta2 of Adam optimizer')
     parser.add_argument('--epoch', default=100, type=int)
     parser.add_argument('--batch_size', default=16, type=int)
-    parser.add_argument('--num_classes', default=1000, type=int)
+    parser.add_argument('--num_classes', default=37, type=int)
     parser.add_argument('--checkpoint', default=True, type=bool)
     parser.add_argument('--earlystop', default=False, type=bool)
     parser.add_argument('--apply_scheduler', default=False, type=bool)
@@ -40,7 +40,7 @@ def main(args):
     path = args.path
 
     train_loader = DataLoader(
-        ClassificationDataset(path=path, subset='train', img_size=args.img_size, transforms_=True)
+        ClassificationDataset(path=path, subset='train', img_size=args.img_size, transforms_=True),
         batch_size=args.batch_size,
         shuffle=True,
         drop_last=True,
@@ -54,14 +54,7 @@ def main(args):
     )
 
     model = VGG19(num_classes=args.num_classes).to(device)
-
-    lr = args.lr
-    beta1 = args.beta1
-    beta2 = args.beta2
-
-    loss_func = nn.CrossEntropyLoss().to(device)
-
-    optimizer = optim.Adam(model.parameters(), lr=lr, betas=(beta1,beta2))
+    print(model)
 
     history = train_step(
         model=model,

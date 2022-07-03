@@ -13,12 +13,12 @@ device = torch.device('cuda')
 
 model = VGG19().to(device)
 
-es_save_path = './model/es_checkpoint.pt'
-cp_save_path = './model/cp_checkpoint.pt'
+es_save_path = './weight/es_checkpoint.pt'
+cp_save_path = './weight/cp_checkpoint.pt'
 checkpoint = CheckPoint(verbose=True, path=cp_save_path)
 early_stopping = EarlyStopping(patience=20, verbose=True, path=es_save_path)
 
-lr = 0.0001
+lr = 0.0002
 beta1 = 0.9
 beta2 = 0.999
 loss_func = nn.CrossEntropyLoss().to(device)
