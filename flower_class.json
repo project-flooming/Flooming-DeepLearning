@@ -1,9 +1,4 @@
-{
-    """
-    1: Class Number
-    2: Flowering Time
-    3: Flower Language
-    """
+flower_class = {
     0 : ['얼레지', 'spring']
     1 : ['노루귀', 'spring'],
     2 : ['애기똥풀', 'spring'],
