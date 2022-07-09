@@ -1,14 +1,15 @@
 from model.classification_model import VGG19
 from model.generation_model import Generator
+import torch
+import cv2
 
 class Inference:    
-    def __init__(self, path, c_weight, g_weight, num_classes=37):
-        self.image = self.load_image(path)
+    def __init__(self, c_weight=None, g_weight=None, num_classes=37):
         self.classification_model = VGG19(num_classes=num_classes)
         self.classification_model.load_state_dict(torch.load(c_weight))
         self.generation_model = Generator()
         self.generation_model.load_state_dict(torch.load(g_weight))
-        self.class = {
+        self.classes = {
             0: '얼레지',
             1: '노루귀',
             2: '애기똥풀',
@@ -51,10 +52,11 @@ class Inference:
             36: '솜다리',
         }
         
-    def classification(self, image):
+    def classification(self, image_src):
+        image = self.load_image(image_src)
         output = self.classification_model(image)
         output_class = int(output.argmax())
-        return self.class[output_class]
+        return self.classes[output_class]
         
     def generation(self, image):
         output = self.generation_model(image)
@@ -65,3 +67,9 @@ class Inference:
         img = cv2.resize(img, (256, 256))
         img = torch.Tensor(img).permute(2,0,1)
         return img.unsqueeze(dim=0)
+
+def classification(image_src):
+    c_weight_path = './ai/weight/classification_model.pt'
+    inference = Inference(c_weight=c_weight_path)
+    output = inference.classification(image_src)
+    return output
