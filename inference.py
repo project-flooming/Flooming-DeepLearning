@@ -1,14 +1,17 @@
+import cv2
+
+import torch
+import torch.nn.functional as F
+
 from model.classification_model import VGG19
 from model.generation_model import Generator
-import torch
-import cv2
 
 class Inference:    
     def __init__(self, c_weight=None, g_weight=None, num_classes=37):
-        self.classification_model = VGG19(num_classes=num_classes)
-        self.classification_model.load_state_dict(torch.load(c_weight))
-        self.generation_model = Generator()
-        self.generation_model.load_state_dict(torch.load(g_weight))
+        self.classification_model = VGG19(num_classes=num_classes).cpu()
+        self.classification_model.load_state_dict(torch.load(c_weight, map_location=torch.device('cpu')))
+        self.generation_model = Generator().cpu()
+        self.generation_model.load_state_dict(torch.load(g_weight, map_location=torch.device('cpu')))
         self.classes = {
             0: '얼레지',
             1: '노루귀',
@@ -52,14 +55,31 @@ class Inference:
             36: '솜다리',
         }
         
-    def classification(self, image_src):
-        image = self.load_image(image_src)
-        output = self.classification_model(image)
-        output_class = int(output.argmax())
-        return self.classes[output_class]
-        
+    @torch.no_grad()
+    def classify(self, image):
+        inputs = self.load_image(image)
+        output = self.classification_model(inputs)
+        prob_with_idx = torch.sort(F.softmax(output, dim=1))
+        result = []
+        total = prob_with_idx[0][0][-3:].sum().item()
+        for i in range(1, 4):
+            prob = prob_with_idx[0][0][-3:][-i].item()
+            idx = prob_with_idx[1][0][-3:][-i].item()
+            prob = f"{int((prob / total) * 100)}%"
+            output = {
+                'probability': prob,
+                'type': self.classes[idx]
+            }
+            result.append(output)
+        return result
+    
+    @torch.no_grad()
     def generation(self, image):
-        output = self.generation_model(image)
+        inputs = self.load_image(image)
+        output = self.generation_model(inputs)
+        return output
+        
+        
         
     def load_image(self, path):
         img = cv2.imread(path)
@@ -68,8 +88,14 @@ class Inference:
         img = torch.Tensor(img).permute(2,0,1)
         return img.unsqueeze(dim=0)
 
-def classification(image_src):
-    c_weight_path = './ai/weight/classification_model.pt'
-    inference = Inference(c_weight=c_weight_path)
-    output = inference.classification(image_src)
-    return output
+c_weight_path = './ai/weight/classification_model.pt'
+c_inference = Inference(c_weight=c_weight_path)
+
+def classify(image_src):
+    return c_inference.classification(image_src)
+
+g_weight_path = './ai/weight/generation_model.pt'
+g_inference = Inference(g_weight=g_weight_path)
+
+def generate(image_src):
+    return g_inference.generation(image_src)
