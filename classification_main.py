@@ -8,7 +8,7 @@ import torch.optim as optim
 from torch.utils.data import DataLoader
 
 from dataset.classification_dataset import ClassificationDataset
-from model.classification_model import VGG19
+from model.classification_model import MobileNetV3
 from train.classification_train import train_step
 
 
@@ -53,7 +53,7 @@ def main(args):
         drop_last=True,
     )
 
-    model = VGG19(num_classes=args.num_classes).to(device)
+    model = MobileNetV3(num_classes=args.num_classes).to(device)
     print(model)
 
     history = train_step(

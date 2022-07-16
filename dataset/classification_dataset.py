@@ -4,6 +4,7 @@ from PIL import Image
 import torch
 import torchvision.transforms as transforms
 from torch.utils.data import Dataset
+from torch.utils.data import DataLoader
 
 """
 path : dataset/
@@ -56,21 +57,11 @@ class ClassificationDataset(Dataset):
         files25 = glob(path+'/'+subset+'/25/*.jpg')
         files26 = glob(path+'/'+subset+'/26/*.jpg')
         files27 = glob(path+'/'+subset+'/27/*.jpg')
-        files28 = glob(path+'/'+subset+'/28/*.jpg')
-        files29 = glob(path+'/'+subset+'/29/*.jpg')
-        files30 = glob(path+'/'+subset+'/30/*.jpg')
-        files31 = glob(path+'/'+subset+'/31/*.jpg')
-        files32 = glob(path+'/'+subset+'/32/*.jpg')
-        files33 = glob(path+'/'+subset+'/33/*.jpg')
-        files34 = glob(path+'/'+subset+'/34/*.jpg')
-        files35 = glob(path+'/'+subset+'/35/*.jpg')
-        files36 = glob(path+'/'+subset+'/36/*.jpg')
 
         self.image_files = files0 + files1 + files2 + files3 + files4 + files5 + files6 + \
             files7 + files8 + files9 + files10 + files11 + files12 + files13 + files14 + \
             files15 + files16 + files17 + files18 + files19 + files20 + files21 + files22 + \
-            files23 + files24 + files25 + files26 + files27 + files28 + files29 + files30 + \
-            files31 + files32 + files33 + files34 + files35 + files36
+            files23 + files24 + files25 + files26 + files27
         
         self.subset = subset
         self.transforms_ = transforms.Compose([
@@ -84,9 +75,7 @@ class ClassificationDataset(Dataset):
             [9]*len(files9) + [10]*len(files10) + [11]*len(files11) + [12]*len(files12) + [13]*len(files13) + \
             [14]*len(files14) + [15]*len(files15) + [16]*len(files16) + [17]*len(files17) + [18]*len(files18) + \
             [19]*len(files19) + [20]*len(files20) + [21]*len(files21) + [22]*len(files22) + [23]*len(files23) + \
-            [24]*len(files24) + [25]*len(files25) + [26]*len(files26) + [27]*len(files27) + [28]*len(files28) + \
-            [29]*len(files29) + [30]*len(files30) + [31]*len(files31) + [32]*len(files32) + [33]*len(files33) + \
-            [34]*len(files34) + [35]*len(files35) + [36]*len(files36)
+            [24]*len(files24) + [25]*len(files25) + [26]*len(files26) + [27]*len(files27)
                     
         assert len(self.image_files) == len(self.labels), \
             f'The size of inputs and labels is different.'

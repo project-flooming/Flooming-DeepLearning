@@ -7,11 +7,11 @@ import torch.nn as nn
 import torch.optim as optim
 
 from torchcallback import CheckPoint, EarlyStopping
-from model.classification_model import VGG19
+from model.classification_model import MovileNetV3
 
 device = torch.device('cuda')
 
-model = VGG19().to(device)
+model = MobileNetV3(num_classes=28).to(device)
 
 es_save_path = './weight/es_checkpoint.pt'
 cp_save_path = './weight/cp_checkpoint.pt'
