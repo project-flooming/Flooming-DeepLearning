@@ -3,8 +3,8 @@ import cv2
 import torch
 import torch.nn.functional as F
 
-from model.classification_model import MobileNetV3
-from model.generation_model import Generator
+from ai.model.mobilenetv3 import MobileNetV3
+from ai.model.pix2pix import Generator
 
 class Inference:    
     def __init__(self, c_weight=None, g_weight=None, num_classes=28):
@@ -70,7 +70,7 @@ class Inference:
         
     def load_image(self, path):
         img = cv2.imread(path)
-        img = cv2.cvtColor(img)
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         img = cv2.resize(img, (256, 256))
         img = torch.Tensor(img).permute(2,0,1)
         return img.unsqueeze(dim=0)

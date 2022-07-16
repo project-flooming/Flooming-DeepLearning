@@ -8,7 +8,7 @@ import torch.optim as optim
 from torch.utils.data import DataLoader
 
 from dataset.classification_dataset import ClassificationDataset
-from model.classification_model import MobileNetV3
+from model.mobilenetv3 import MobileNetV3
 from train.classification_train import train_step
 
 
