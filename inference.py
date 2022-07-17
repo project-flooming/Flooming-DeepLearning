@@ -1,4 +1,5 @@
-import cv2
+import numpy as np
+from PIL import Image
 
 import torch
 import torch.nn.functional as F
@@ -73,10 +74,10 @@ class Inference:
         return output
         
     def load_image(self, path):
-        img = cv2.imread(path)
-        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        img = cv2.resize(img, (256, 256))
-        img = torch.Tensor(img / 255.).permute(2,0,1)
+        img = Image.open(path)
+        img = img.resize((256, 256))
+        img = np.array(img) / 255.
+        img = torch.Tensor(img).permute(2,0,1)
         return img.unsqueeze(dim=0)
 
 c_weight_path = './ai/weight/mobilenetv3_weight.pt'
