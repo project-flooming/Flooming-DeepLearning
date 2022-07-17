@@ -6,12 +6,17 @@ import torch.nn.functional as F
 from ai.model.mobilenetv3 import MobileNetV3
 from ai.model.pix2pix import Generator
 
-class Inference:    
+class Inference:
     def __init__(self, c_weight=None, g_weight=None, num_classes=28):
+        
         self.classification_model = MobileNetV3(num_classes=num_classes).cpu()
         self.classification_model.load_state_dict(torch.load(c_weight, map_location=torch.device('cpu')))
+        self.classification_model.eval()
+        
         self.generation_model = Generator().cpu()
         self.generation_model.load_state_dict(torch.load(g_weight, map_location=torch.device('cpu')))
+        self.generation_model.eval()
+        
         self.classes = {
             0: '얼레지',
             1: '노루귀',
@@ -41,14 +46,13 @@ class Inference:
             25: '목련',
             26: '벚꽃',
             27: '튤립',
-            28: '안개꽃',
         }
         
     @torch.no_grad()
-    def classify(self, image):
+    def classification(self, image):
         inputs = self.load_image(image)
         output = self.classification_model(inputs)
-        prob_with_idx = torch.sort(F.softmax(output, dim=1))
+        prob_with_idx = torch.sort(F.softmax(output))
         result = []
         total = prob_with_idx[0][0][-3:].sum().item()
         for i in range(1, 4):
@@ -72,7 +76,7 @@ class Inference:
         img = cv2.imread(path)
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         img = cv2.resize(img, (256, 256))
-        img = torch.Tensor(img).permute(2,0,1)
+        img = torch.Tensor(img / 255.).permute(2,0,1)
         return img.unsqueeze(dim=0)
 
 c_weight_path = './ai/weight/mobilenetv3_weight.pt'
