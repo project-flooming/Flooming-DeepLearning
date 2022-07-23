@@ -1,5 +1,5 @@
 import numpy as np
-from PIL import Image
+import cv2
 
 import torch
 import torch.nn.functional as F
@@ -51,7 +51,7 @@ class Inference:
         
     @torch.no_grad()
     def classification(self, image):
-        inputs = self.load_image(image)
+        inputs, _ = self.load_image(image)
         output = self.classification_model(inputs)
         prob_with_idx = torch.sort(F.softmax(output))
         result = []
@@ -69,16 +69,19 @@ class Inference:
     
     @torch.no_grad()
     def generation(self, image):
-        inputs = self.load_image(image)
+        inputs, size = self.load_image(image)
         output = self.generation_model(inputs)
-        return output
-        
+        output = (output + 1) / 2
+        output = np.transpose(output[0].detach().numpy(), (1,2,0))
+        return cv2.resize(output, (size[0], size[1]))
+
     def load_image(self, path):
-        img = Image.open(path)
-        img = img.resize((256, 256))
-        img = np.array(img) / 255.
-        img = torch.Tensor(img).permute(2,0,1)
-        return img.unsqueeze(dim=0)
+        img = cv2.imread(path, cv2.IMREAD_COLOR)
+        original_size = img.shape
+        img = cv2.resize(img, (256, 256))
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        img = torch.Tensor(img / 255.).permute(1,2,0)
+        return img.unsqueeze(dim=0), original_size
 
 c_weight_path = './ai/weight/mobilenetv3_weight.pt'
 c_inference = Inference(c_weight=c_weight_path)
@@ -86,7 +89,7 @@ c_inference = Inference(c_weight=c_weight_path)
 def classify(image_src):
     return c_inference.classification(image_src)
 
-g_weight_path = './ai/weight/generation_model.pt'
+g_weight_path = './ai/weight/generation_weight.pt'
 g_inference = Inference(g_weight=g_weight_path)
 
 def generate(image_src):
