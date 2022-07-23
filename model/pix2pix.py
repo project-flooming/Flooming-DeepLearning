@@ -83,9 +83,9 @@ class Generator(nn.Module):
     def _init_weight_(self, mean=0.0, std=0.02):
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
-                init.normal(m.weight, mean, std)
+                init.normal_(m.weight, mean, std)
             if isinstance(m, nn.ConvTranspose2d):
-                init.normal(m.weight, mean, std)
+                init.normal_(m.weight, mean, std)
     
 class ConvBNReLU(nn.Module):
     def __init__(self, in_dim, out_dim, normalize=True):
@@ -123,4 +123,4 @@ class Discriminator(nn.Module):
     def _init_weight_(self, mean=0.0, std=0.02):
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
-                init.normal(m.weight, mean, std)
+                init.normal_(m.weight, mean, std)
