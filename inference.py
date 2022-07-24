@@ -5,13 +5,19 @@ import torch
 import torch.nn.functional as F
 
 from ai.model.mobilenetv3 import MobileNetV3
+from ai.model.shufflentv2 import ShuffleNetV2
 from ai.model.pix2pix import Generator
 
 class Inference:
-    def __init__(self, c_weight=None, g_weight=None, num_classes=28):
+
+    def __init__(self, model_name=None, c_weight=None, g_weight=None, num_classes=28):
 
         if c_weight is not None:
-            self.classification_model = MobileNetV3(num_classes=num_classes).cpu()
+            assert model_name in ('mobilenetv3', 'shufflenetv2')
+            if model_name == 'mobilenetv3':
+                self.classification_model = MobileNetV3(num_classes=num_classes).cpu()
+            else:
+                self.classification_model = ShuffleNetV2(num_classes=num_classes).cpu()
             self.classification_model.load_state_dict(torch.load(c_weight, map_location=torch.device('cpu')))
             self.classification_model.eval()
         
@@ -89,8 +95,8 @@ class Inference:
         img = torch.Tensor(img / 255.).permute(2,0,1)
         return img.unsqueeze(dim=0), original_size
 
-c_weight_path = './ai/weight/mobilenetv3_weight.pt'
-c_inference = Inference(c_weight=c_weight_path)
+c_weight_path = './ai/weight/shufflenetv2_weight.pt'
+c_inference = Inference(model_name='shufflenetv2', c_weight=c_weight_path)
 
 def classify(image_src):
     return c_inference.classification(image_src)
