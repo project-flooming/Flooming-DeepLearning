@@ -1,0 +1,17 @@
+import torch
+import torch.nn as nn
+import torchvision.models as models
+
+class ShuffleNetV2(nn.Module):
+    def __init__(
+        self,
+        in_dim=3,
+        num_classes=100,
+        pre_trained=True,
+    ):
+        super(ShuffleNetV2, self).__init__()
+        self.model = models.shufflenet_v2_x0_5(pretrained=pre_trained)
+        self.model.fc = nn.Linear(1024, num_classes)
+        
+    def forward(self, x):
+        return self.model(x)
