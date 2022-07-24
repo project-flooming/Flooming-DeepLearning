@@ -9,14 +9,16 @@ from ai.model.pix2pix import Generator
 
 class Inference:
     def __init__(self, c_weight=None, g_weight=None, num_classes=28):
+
+        if c_weight is not None:
+            self.classification_model = MobileNetV3(num_classes=num_classes).cpu()
+            self.classification_model.load_state_dict(torch.load(c_weight, map_location=torch.device('cpu')))
+            self.classification_model.eval()
         
-        self.classification_model = MobileNetV3(num_classes=num_classes).cpu()
-        self.classification_model.load_state_dict(torch.load(c_weight, map_location=torch.device('cpu')))
-        self.classification_model.eval()
-        
-        self.generation_model = Generator().cpu()
-        self.generation_model.load_state_dict(torch.load(g_weight, map_location=torch.device('cpu')))
-        self.generation_model.eval()
+        if g_weight is not None:
+            self.generation_model = Generator().cpu()
+            self.generation_model.load_state_dict(torch.load(g_weight, map_location=torch.device('cpu')))
+            self.generation_model.eval()
         
         self.classes = {
             0: '얼레지',
@@ -59,9 +61,9 @@ class Inference:
         for i in range(1, 4):
             prob = prob_with_idx[0][0][-3:][-i].item()
             idx = prob_with_idx[1][0][-3:][-i].item()
-            prob = f"{int((prob / total) * 100)}%"
+            prob_100 = f"{int((prob / total) * 100)}%"
             output = {
-                'probability': prob,
+                'probability': prob_100,
                 'type': self.classes[idx]
             }
             result.append(output)
