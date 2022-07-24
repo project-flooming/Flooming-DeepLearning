@@ -6,8 +6,8 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 
-from torchcallback import CheckPoint, EarlyStopping
-from model.classification_model import MobileNetV3
+from ..torchcallback import CheckPoint, EarlyStopping
+from ..model.mobilenetv3 import MobileNetV3
 
 device = torch.device('cuda')
 
