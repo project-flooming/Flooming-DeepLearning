@@ -78,7 +78,8 @@ class Inference:
         output = (output + 1) / 2
         output = np.transpose(output[0].detach().numpy(), (1,2,0))
         output = cv2.resize(output, (size[0], size[1]), interpolation=cv2.INTER_LINEAR)
-        return cv2.imwrite(f'./picture/{file_name}', (output*255).astype(np.int32))
+        output = cv2.cvtColor(output, cv2.COLOR_RGB2BGR)
+        return cv2.imwrite(f'./picture/{file_name}', (output*255).astype(np.int32)), output
 
     def load_image(self, path):
         img = cv2.imread(path, cv2.IMREAD_COLOR)
