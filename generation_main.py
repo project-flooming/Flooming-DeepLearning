@@ -6,7 +6,7 @@ import torch.optim as optim
 from torch.utils.data import DataLoader
 
 from dataset.generation_dataset import GenerationDataset
-from .model.pix2pix import Generator, Discriminator
+from model.pix2pix import Generator, Discriminator
 from train.generation_train import train_gan
 
 
