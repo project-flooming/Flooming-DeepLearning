@@ -1,8 +1,8 @@
 # Build Deep Learning Model for Flooming Project
 ## model: Pix2Pix, Style Transfer, MobileNetV3, ShuffleNetV2
   
-### first goal: Classify the class of flower
-### second goal: Convert flower image to picture
+### First goal: Classify the class of flower
+### Second goal: Convert flower image to picture
 
 ### [example 1 in our flower dataset](https://github.com/project-flooming/Flooming-DeepLearning/blob/main/figure/figure4.JPG)
 <img src = "https://github.com/project-flooming/Floming-deeplearning/blob/main/figure/figure4.JPG?raw=true">
