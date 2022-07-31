@@ -1,8 +1,8 @@
-# 딥러닝 모델과 커스텀 데이터셋 구축
+# Build Deep Learning Model for Flooming Project
 ## model: Pix2Pix, Style Transfer, MobileNetV3, ShuffleNetV2
   
-### first goal: 꽃 사진을 입력으로 받으면 어떤 종류인지 분류
-### second goal: 꽃 사진을 입력으로 받으면 그림으로 변환해서 출력
+### first goal: Classify the class of flower
+### second goal: Convert flower image to picture
 
 ### [example 1 in our flower dataset](https://github.com/project-flooming/Flooming-DeepLearning/blob/main/figure/figure4.JPG)
 <img src = "https://github.com/project-flooming/Floming-deeplearning/blob/main/figure/figure4.JPG?raw=true">
