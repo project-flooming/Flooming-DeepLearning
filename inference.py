@@ -1,17 +1,31 @@
 import numpy as np
 import cv2
+from PIL import Image
 
 import torch
 import torch.nn.functional as F
+from torch.autograd import Variable
+from torchvision.transforms.functional import to_pil_image
 
-from ai.model.mobilenetv3 import MobileNetV3
-from ai.model.shufflentv2 import ShuffleNetV2
-from ai.model.pix2pix import Generator
+
+from ai.models.mobilenetv3 import MobileNetV3
+from ai.models.shufflentv2 import ShuffleNetV2
+from ai.models.pix2pix import Generator
+from ai.models.styletransfer import TransformerNet
+from util import denormalize, style_transform
 
 class Inference:
 
-    def __init__(self, model_name=None, c_weight=None, g_weight=None, num_classes=28):
+    def __init__(
+        self, 
+        model_name=None, 
+        c_weight=None, 
+        g_weight=None, 
+        s_weight=None, 
+        num_classes=28
+    ):
 
+        # Classification Phase
         if c_weight is not None:
             assert model_name in ('mobilenetv3', 'shufflenetv2')
             if model_name == 'mobilenetv3':
@@ -21,10 +35,18 @@ class Inference:
             self.classification_model.load_state_dict(torch.load(c_weight, map_location=torch.device('cpu')))
             self.classification_model.eval()
         
+        # Pix2Pix Phase
         if g_weight is not None:
             self.generation_model = Generator().cpu()
             self.generation_model.load_state_dict(torch.load(g_weight, map_location=torch.device('cpu')))
             self.generation_model.eval()
+
+        # Style Transfer Phase
+        if s_weight is not None:
+            self.styletransfer_model = TransformerNet().cpu()
+            self.styletransfer_model.load_state_dict(torch.load(s_weight, map_location=torch.device('cpu')))
+            self.styletransfer_model.eval()
+            self.transform = style_transform()
         
         self.classes = {
             0: '얼레지',
@@ -87,6 +109,18 @@ class Inference:
         output = cv2.cvtColor(output, cv2.COLOR_RGB2BGR)
         return cv2.imwrite(f'./picture/{file_name}', (output*255).astype(np.int32)), output
 
+    @torch.no_grad()
+    def styletransfer(self, src):
+        file_name = src.split('/')[-1]
+        print(file_name)
+        inputs = Variable(self.transform(Image.open(src)))
+        inputs = inputs.unsqueeze(0)
+        output = denormalize(self.styletransfer_model(inputs))
+        print(output.shape, output)
+        output = to_pil_image(output[0])
+        output.save(f'./picture/{file_name}')
+        return output
+
     def load_image(self, path):
         img = cv2.imread(path, cv2.IMREAD_COLOR)
         original_size = img.shape
@@ -106,3 +140,9 @@ g_inference = Inference(g_weight=g_weight_path)
 
 def generate(image_src):
     return g_inference.generation(image_src)
+
+s_weight_path = './ai/weight/style_transfer_weight.pt'
+s_inference = Inference(s_weight=s_weight_path)
+
+def style_transform(image_src):
+    return s_inference.styletransfer(image_src)
