@@ -1,19 +1,21 @@
-import argparse
 import os
 import sys
+import argparse
 import random
-from PIL import Image
 import numpy as np
-import torch
 import glob
+from PIL import Image
+
+import torch
+import torchvision.transforms as transforms
 from torch.optim import Adam
 from torch.utils.data import DataLoader
 from torchvision import datasets
 from torchvision.utils import save_image
+
 from ..models.styletransfer import TransformerNet, VGG16
 from ..util import * 
 
-import torchvision.transforms as transforms
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Parser for Fast-Neural-Style")
