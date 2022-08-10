@@ -1,5 +1,4 @@
 import numpy as np
-import cv2
 from PIL import Image
 
 import torch
@@ -7,21 +6,12 @@ import torch.nn.functional as F
 from torch.autograd import Variable
 from torchvision.transforms.functional import to_pil_image
 
-
 from ai.models.mobilenetv3 import MobileNetV3
 from ai.models.shufflentv2 import ShuffleNetV2
 from ai.models.pix2pix import Generator
 from ai.models.styletransfer import TransformerNet
 from .util import denormalize, style_transform
 
-
-def load_image( path):
-    img = cv2.imread(path, cv2.IMREAD_COLOR)
-    original_size = img.shape
-    img = cv2.resize(img, (256, 256))
-    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-    img = torch.Tensor(img / 255.).permute(2,0,1)
-    return img.unsqueeze(dim=0), original_size
 
 class Inference:
 
@@ -78,7 +68,8 @@ class Inference:
         
     @torch.no_grad()
     def classification(self, src):
-        inputs = (Image.open(src)).resize((256,256))
+        inputs = Image.open(src).convert('RGB')
+        inputs = inputs.resize((256,256))
         inputs = torch.from_numpy(np.array(inputs))
         inputs = inputs.permute(2,0,1)
         output = self.classification_model(inputs / 255.)
@@ -99,10 +90,14 @@ class Inference:
     @torch.no_grad()
     def style_convert(self, src):
         file_name = src.split('/')[-1]
-        inputs = Variable(self.transform(Image.open(src).convert('RGB')))
+        original_img = Image.open(src).convert('RGB')
+        original_size = original_img.size
+        inputs = original_img.resize((512, 512))
+        inputs = Variable(self.transform(inputs))
         inputs = inputs.unsqueeze(0)
         output = denormalize(self.styletransfer_model(inputs))
         output = to_pil_image(output[0])
+        output = output.resize(original_size)
         output.save(f'./picture/{file_name}')
         return output
 
