@@ -6,10 +6,10 @@ import torch.nn.functional as F
 from torch.autograd import Variable
 from torchvision.transforms.functional import to_pil_image
 
-from ai.models.mobilenetv3 import MobileNetV3
-from ai.models.shufflentv2 import ShuffleNetV2
-from ai.models.pix2pix import Generator
-from ai.models.styletransfer import TransformerNet
+from models.mobilenetv3 import MobileNetV3
+from models.shufflentv2 import ShuffleNetV2
+from models.pix2pix import Generator
+from models.styletransfer import TransformerNet
 from .util import denormalize, style_transform
 
 
@@ -72,6 +72,7 @@ class Inference:
         inputs = inputs.resize((256,256))
         inputs = torch.from_numpy(np.array(inputs))
         inputs = inputs.permute(2,0,1)
+        inputs = inputs.unsqueeze(dim=0)
         output = self.classification_model(inputs / 255.)
         prob_with_idx = torch.sort(F.softmax(output))
         result = []
@@ -103,7 +104,7 @@ class Inference:
 
 
 # classification function
-c_weight_path = './ai/weight/shufflenetv2_weight.pt'
+c_weight_path = './weight/shufflenetv2_weight.pt'
 c_inference = Inference(model_name='shufflenetv2', c_weight=c_weight_path)
 
 
@@ -111,7 +112,7 @@ def classify(image_src):
     return c_inference.classification(image_src)
 
 # style transfer function with mosaic weight
-s_weight_path = './ai/weight/happy_tears.pt'
+s_weight_path = './weight/happy_tears.pt'
 s_mosaic_inference = Inference(s_weight=s_weight_path)
 
 
