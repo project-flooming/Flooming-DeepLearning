@@ -1,5 +1,5 @@
 # Build Deep Learning Model for Flooming Project
-## model: Pix2Pix, Style Transfer, MobileNetV3, ShuffleNetV2
+## Models: Pix2Pix, Style Transfer, MobileNetV3, ShuffleNetV2
   
 ### First goal: Classify the class of flower
 ### Second goal: Convert flower image to picture
@@ -20,4 +20,4 @@
 
 source1 : [Pix2Pix](https://arxiv.org/abs/1611.07004)
 source2 : [Style Transfer](https://arxiv.org/abs/1508.06576)
-source3 : [eriklindernoren GitHub](https://github.com/eriklindernoren/Fast-Neural-Style-Transfer)
+reference : [eriklindernoren GitHub](https://github.com/eriklindernoren/Fast-Neural-Style-Transfer)
